@@ -1,2 +1,2 @@
-# solana-identity
-The Solana Open Identity Standard (built on top of SNS)
+# solana-identity-kit
+The identity layer for Solana. Turn any .sol name into a portable, programmable identity any app can read.
