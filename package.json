@@ -1,0 +1,16 @@
+{
+  "name": "sik",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Solana Identity Kit — open identity standard built on SNS",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @sik/dashboard dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

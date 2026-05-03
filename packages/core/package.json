@@ -1,0 +1,27 @@
+{
+  "name": "@sik/core",
+  "version": "0.1.0",
+  "description": "Core SDK for the Solana Identity Kit — getIdentity() and shared types",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@bonfida/spl-name-service": "latest",
+    "@sik/reputation": "workspace:*",
+    "@solana/web3.js": "^1.95.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

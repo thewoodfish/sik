@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "@solana/wallet-adapter-react-ui/styles.css";
+
+:root {
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body {
+  background-color: #0f0f0f;
+  color: #f0f0f0;
+  font-family: var(--font-mono);
+}
+
+/* Wallet adapter button overrides */
+.wallet-adapter-button {
+  background-color: #9945ff !important;
+  border-radius: 8px !important;
+  font-family: var(--font-mono) !important;
+}
+
+.wallet-adapter-button:hover {
+  background-color: #7a33cc !important;
+}
