@@ -40,7 +40,8 @@ export function ReputationBreakdownChart({ score, breakdown }: Props) {
                   <span className="text-gray-600 ml-2 text-xs">{description}</span>
                 </div>
                 <span className="font-mono text-gray-300">
-                  {value}
+                  <span className="text-gray-500 mr-1">—</span>
+                  <span className="text-gray-100 font-semibold text-base">{value}</span>
                   <span className="text-gray-600">/{max}</span>
                 </span>
               </div>

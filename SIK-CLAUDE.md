@@ -1,398 +1,305 @@
-# CLAUDE.md — SIK (Solana Identity Kit)
+# CLAUDE.md — SIK v2 (Winning the Hackathon)
 
-## Project Identity
+## Status
 
-**Repo:** `sik`
-**npm scope:** `@sik/core`, `@sik/reputation`, `@sik/dashboard`
-**Standard description:**
-> SIK is an open identity standard built on SNS. It gives every `.sol` name a
-> structured identity primitive — profile, reputation, and credentials — that
-> any Solana app can integrate with a single function call instead of building
-> identity from scratch.
+V1 is complete. All three packages exist and compile:
+- `@sik/core` — getIdentity(), SNS resolution, caching
+- `@sik/reputation` — scoring engine, breakdown
+- `@sik/dashboard` — Next.js 14, all 6 components, wallet provider
 
-**Hackathon:** SNS Identity Track, Colosseum Frontier Hackathon
-**Deadline:** May 11, 2026 (Colosseum submission) | Demo Day: May 14
-**Prize target:** $1,800 (1st place)
+V2 is not about building more features.
+V2 is about the gap between "works" and "wins".
 
 ---
 
-## The One Sentence That Must Be True of Every Decision
+## The 7 Judging Criteria — Honest Gap Analysis
 
-> SIK is not a profile page. It is the identity primitive that every Solana
-> app has been rebuilding independently, now standardised.
+| Criterion | V1 Status | Gap |
+|---|---|---|
+| Innovation | Strong — reputation scoring is novel | Add MagicBlock real-time updates |
+| Technical Merit | Strong — clean monorepo, compiled | Publish npm packages |
+| Practicality | Good — use cases documented | Add one real app integration demo |
+| Completeness | Strong — all components exist | Deploy to Vercel, live URL |
+| User Experience | Unknown — needs review | Polish [domain] page, mobile |
+| Founder Potential | Weak — no roadmap visible in product | Add SIK-2 stub + roadmap to README |
+| Demo Quality | Not started | Write and record demo script |
 
-If a feature makes SIK look like an app, reconsider it.
-If a feature makes SIK look like infrastructure, build it.
-
----
-
-## What to Ship for the Hackathon (9 Days)
-
-### Must Ship
-1. **`@sik/core`** — `getIdentity(domain, connection)` — the core SDK function
-2. **Reputation scoring** — computed from on-chain signals, the novel piece
-3. **Identity Dashboard** — the reference implementation / demo surface
-
-### Stub Only (document the interface, do not implement)
-- Credentials & attestations layer — needs on-chain program, out of scope
-- ZK selective disclosure — too complex, stub the type surface only
-- Third-party credential issuers — document the interface spec
-
-### Do Not Build
-- Anything that requires a new on-chain program deployment
-- Any token or payment mechanic
-- Mobile app
+V2 closes every gap above. In order of priority.
 
 ---
 
-## Monorepo Structure
+## Priority 1 — Deploy to Vercel (Do This First)
 
-```
-sik/
-  packages/
-    core/           # @sik/core — getIdentity(), types, SNS resolution
-    reputation/     # @sik/reputation — scoring engine
-    dashboard/      # @sik/dashboard — Next.js reference app
-  docs/
-    SIK-1.md        # Protocol spec draft (for grant path)
-  README.md
-  package.json      # pnpm workspace
+Judges need a live URL. Everything else is secondary to this.
+
+```bash
+cd packages/dashboard
+vercel --prod
 ```
 
+Set environment variables in Vercel dashboard:
+```
+NEXT_PUBLIC_RPC_ENDPOINT=https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+```
+
+Target URL: `sik.vercel.app` or `solana-identity-kit.vercel.app`
+
+Test immediately after deploy:
+- Navigate to `/bonfida` — identity card must load
+- Reputation score must be non-zero
+- All social links must resolve or show null gracefully
+
+**The live URL goes in every submission field that accepts text.**
+
 ---
 
-## Package: `@sik/core`
+## Priority 2 — Polish the [domain] Page
 
-### The Core API
+This is the Demo Day surface. Judges will type `sik.vercel.app/bonfida`
+and judge the entire project in 10 seconds.
 
+### It must have:
+- Avatar (from SNS Pic record, fallback to generated gradient avatar)
+- Domain name large and prominent: `bonfida.sol`
+- Wallet address truncated: `7Vz3...k9Qp`
+- Social links as icon buttons (Twitter, GitHub, Discord, Telegram)
+- Reputation score as a large number with a label: "Reputation Score"
+- Breakdown as a horizontal bar chart — one bar per signal
+- Each bar labeled and showing its points: "Account Age — 18/20"
+- Credentials section: empty state with "SIK-2 coming soon" message
+- Share button: copies `sik.vercel.app/bonfida` to clipboard
+
+### Visual standard:
+Dark background. Clean typography. Not a crypto app aesthetic —
+think Linear or Vercel's own dashboard. Judges are developers.
+They will notice if it looks like a hackathon project.
+
+### Mobile:
+Must be readable on mobile. Judges may check on their phones.
+Stack the reputation breakdown vertically on small screens.
+
+---
+
+## Priority 3 — MagicBlock Integration (The $700 Bonus)
+
+MagicBlock is a co-sponsor. Not integrating their tech leaves $700 on the table
+and signals you didn't read the brief.
+
+MagicBlock builds real-time on-chain state using ephemeral rollups.
+The integration angle for SIK: **live reputation updates**.
+
+### What to build:
+When a user is viewing an identity page, the reputation score
+refreshes in real-time as new transactions land — without page reload.
+
+```typescript
+// In [domain]/page.tsx
+import { useRealtimeReputation } from '@sik/reputation';
+
+// Polls every 30s using MagicBlock's real-time infrastructure
+const { score, breakdown, lastUpdated } = useRealtimeReputation(owner, connection);
+```
+
+### Implementation:
+MagicBlock's real-time layer uses WebSocket subscriptions.
+Wire `onAccountChange` for the wallet address to trigger a
+reputation recompute when new transactions are detected.
+Show a subtle "Updated just now" label when it refreshes.
+
+Even a basic implementation that re-fetches on account change
+is enough to legitimately claim the MagicBlock integration.
+
+### In the submission:
+Mention MagicBlock explicitly:
+> "SIK uses MagicBlock's real-time infrastructure to keep reputation
+> scores live — when a new transaction lands, the score updates
+> without a page refresh."
+
+---
+
+## Priority 4 — Publish npm Packages
+
+Published packages signal that SIK is real infrastructure, not a hackathon toy.
+
+```bash
+# In packages/core
+npm publish --access public
+
+# In packages/reputation  
+npm publish --access public
+```
+
+Make sure package.json names are:
+- `@sik/core`
+- `@sik/reputation`
+
+After publishing, the README integration example becomes real:
+```bash
+npm install @sik/core @sik/reputation
+```
+
+This one command in the README, linking to real npm packages,
+changes how judges perceive the entire project.
+
+---
+
+## Priority 5 — The App Integration Demo
+
+The single biggest differentiator between "we built a profile page"
+and "we built infrastructure" is showing another app consuming SIK.
+
+Build a minimal second page: `/demo/dao-gate`
+
+```
+┌─────────────────────────────────────┐
+│  DAO Access Gate — Powered by SIK   │
+│                                     │
+│  Enter a .sol name to check access: │
+│  [bonfida.sol          ] [Check]    │
+│                                     │
+│  ✅ Reputation score: 87/100        │
+│  ✅ Meets minimum threshold (70)    │
+│  ✅ Access granted                  │
+│                                     │
+│  Built with: getIdentity("bonfida") │
+│  3 lines of code                    │
+└─────────────────────────────────────┘
+```
+
+This demo exists to prove one thing: apps use SIK as infrastructure.
+The "3 lines of code" label makes the developer value proposition
+instantly legible to judges who are also developers.
+
+---
+
+## Priority 6 — README Rewrite
+
+The README is what judges read before clicking the live URL.
+Current README needs these sections in this order:
+
+### 1. The one-liner
+> The identity layer for Solana. Turn any `.sol` name into a portable,
+> programmable identity any app can read.
+
+### 2. Live demo link
+> **Live:** https://sik.vercel.app
+
+### 3. The integration (30 seconds to understand)
 ```typescript
 import { getIdentity } from "@sik/core";
 
-const identity = await getIdentity("example.sol", connection);
+const identity = await getIdentity("bonfida.sol", connection);
+
+console.log(identity.reputation.score);     // 87
+console.log(identity.profile.twitter);      // "@bonfida"
+console.log(identity.credentials);          // [] — SIK-2 coming
 ```
 
-### Identity Object Shape
+### 4. Why it exists (3 sentences max)
+Every Solana app that needs identity — DAOs, marketplaces, freelance
+platforms — builds the same profile + reputation logic from scratch.
+SIK standardises it. One SDK, one call, portable across every app.
 
-```typescript
-export interface SIKIdentity {
-  // Resolution
-  domain: string;                    // "example.sol"
-  owner: string;                     // wallet address (base58)
-
-  // Profile — from SNS Records V2
-  profile: {
-    avatar: string | null;           // Record.Pic
-    twitter: string | null;          // Record.Twitter
-    github: string | null;           // Record.Github
-    discord: string | null;          // Record.Discord
-    telegram: string | null;         // Record.Telegram
-    url: string | null;              // Record.Url
-    email: string | null;            // Record.Email
-    backpack: string | null;         // Record.Backpack
-  };
-
-  // Reputation — computed, the novel piece
-  reputation: {
-    score: number;                   // 0–100
-    breakdown: ReputationBreakdown;
-    computedAt: number;              // unix timestamp
-  };
-
-  // Credentials — stubbed for now
-  credentials: Credential[];        // always [] in hackathon build
-
-  // Meta
-  fetchedAt: number;
-}
-
-export interface ReputationBreakdown {
-  accountAge: number;               // 0–20 points
-  transactionVolume: number;        // 0–20 points
-  programDiversity: number;         // 0–20 points
-  daoParticipation: number;         // 0–20 points
-  solBalance: number;               // 0–10 points
-  nftHoldings: number;              // 0–10 points
-}
-
-// Stub types for future layers
-export interface Credential {
-  id: string;
-  issuer: string;
-  type: string;
-  issuedAt: number;
-  data: Record<string, unknown>;
-}
-```
-
-### SNS Resolution Implementation
-
-Use `@bonfida/spl-name-service` — do not reimplement SNS resolution.
-
-```typescript
-import {
-  resolve,
-  getRecordV2,
-  Record,
-} from "@bonfida/spl-name-service";
-import { Connection } from "@solana/web3.js";
-
-// Resolve domain → owner
-const ownerPublicKey = await resolve(connection, "example"); // no .sol suffix
-
-// Fetch a record
-const twitterRecord = await getRecordV2(connection, "example", Record.Twitter);
-const avatarRecord  = await getRecordV2(connection, "example", Record.Pic);
-const githubRecord  = await getRecordV2(connection, "example", Record.Github);
-```
-
-**Important:** Records V2 returns a staleness flag. Check `stale` before
-using the value. If stale, return `null` for that field — do not serve
-stale identity data.
-
-**Records to fetch for profile:**
-`Pic`, `Twitter`, `Github`, `Discord`, `Telegram`, `Url`, `Email`, `Backpack`
-
-Fetch all records in parallel with `Promise.allSettled` — never serial.
-Handle `null` gracefully — most records won't be set.
-
----
-
-## Package: `@sik/reputation`
-
-### Scoring Philosophy
-
-The reputation score is the novel differentiator. No one has done this on
-SNS. It must feel meaningful, not arbitrary. Every point must be explainable.
-
-Score range: **0–100**. Computed entirely from public on-chain data.
-No off-chain data. No oracles. Reproducible by anyone with an RPC.
-
-### Signal Breakdown
-
-| Signal | Max Points | Data Source |
+### 5. The roadmap table
+| Version | Component | Status |
 |---|---|---|
-| Account age | 20 | First transaction timestamp |
-| Transaction volume | 20 | `getSignaturesForAddress` count |
-| Program diversity | 20 | Unique programs interacted with |
-| DAO participation | 20 | Governance program interactions |
-| SOL balance | 10 | `getBalance` |
-| NFT holdings | 10 | Token accounts with supply=1 |
-| **Total** | **100** | |
+| SIK-1 | Core SDK + Reputation Layer | ✅ Live |
+| SIK-2 | Credentials & Attestations | 🔲 Grant application in progress |
+| SIK-3 | Selective Disclosure (ZK) | 🔲 Planned |
+| SIK-4 | Ecosystem Integrations | 🔲 Planned |
 
-### Scoring Implementation
+### 6. Packages
+- `@sik/core` — npm link
+- `@sik/reputation` — npm link
 
-```typescript
-export async function computeReputation(
-  owner: PublicKey,
-  connection: Connection
-): Promise<ReputationBreakdown> {
-
-  const [signatures, balance, tokenAccounts] = await Promise.all([
-    connection.getSignaturesForAddress(owner, { limit: 1000 }),
-    connection.getBalance(owner),
-    connection.getParsedTokenAccountsByOwner(owner, { programId: TOKEN_PROGRAM_ID }),
-  ]);
-
-  return {
-    accountAge:        scoreAccountAge(signatures),
-    transactionVolume: scoreTransactionVolume(signatures.length),
-    programDiversity:  scoreProgramDiversity(signatures),
-    daoParticipation:  scoreDaoParticipation(signatures),
-    solBalance:        scoreSolBalance(balance),
-    nftHoldings:       scoreNftHoldings(tokenAccounts),
-  };
-}
-```
-
-### Scoring Functions
-
-**accountAge (0–20):**
-- Take the oldest signature's `blockTime`
-- Age in days: `(now - oldestBlockTime) / 86400`
-- 0 pts = 0 days, 20 pts = 365+ days, linear interpolation
-
-**transactionVolume (0–20):**
-- 0 pts = 0 txns, 20 pts = 500+ txns, log scale
-- `Math.min(20, Math.floor(Math.log10(count + 1) * 8.68))`
-
-**programDiversity (0–20):**
-- Count unique program IDs across all signatures
-- Exclude system program and token program (too common)
-- 0 pts = 0 unique, 20 pts = 20+ unique programs
-
-**daoParticipation (0–20):**
-- Known governance program IDs to check against signatures:
-  - SPL Governance: `GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw`
-  - Realms: check interactions with known DAO programs
-- 5 pts per confirmed governance interaction, max 20
-
-**solBalance (0–10):**
-- 0 pts = 0 SOL, 10 pts = 10+ SOL, linear
-- `Math.min(10, Math.floor(balance / LAMPORTS_PER_SOL))`
-
-**nftHoldings (0–10):**
-- Count token accounts where `amount === 1` and `decimals === 0`
-- 0 pts = 0 NFTs, 10 pts = 10+ NFTs, linear
-
-### Performance
-
-Reputation computation hits the RPC multiple times. Cache aggressively.
-Default TTL: 1 hour. Expose cache configuration to callers.
-
-```typescript
-const identity = await getIdentity("example.sol", connection, {
-  cache: true,
-  cacheTTL: 3600_000, // 1 hour in ms
-});
-```
+### 7. Contributing / contact
 
 ---
 
-## Package: `@sik/dashboard`
+## Priority 7 — Demo Script (For Demo Day, May 14)
 
-### Stack
+Prepare this. Know it cold. 2 minutes maximum.
 
-- **Next.js 14** (App Router)
-- **@solana/wallet-adapter-react** for wallet connection
-- **@bonfida/sns-react** for domain detection (`useDomainsForOwner`)
-- **Tailwind CSS**
-- **shadcn/ui** components
+**[0:00–0:20] The problem**
+> "Every Solana app that needs to know who a user is builds the same
+> thing from scratch — profile data, reputation, trust signals.
+> There's no standard. SIK is that standard."
 
-### Pages
+**[0:20–0:40] The API**
+> "Any app integrates identity with one function call."
+> [Show code: `const identity = await getIdentity("bonfida.sol", connection)`]
+> "You get profile, reputation score, and credentials. Structured.
+> Portable. No rebuilding."
 
-```
-app/
-  page.tsx              # Landing — connect wallet
-  [domain]/
-    page.tsx            # Identity view for any .sol name
-  dashboard/
-    page.tsx            # Authenticated user's own identity management
-```
+**[0:40–1:10] The live demo**
+> [Open sik.vercel.app/bonfida]
+> "This is bonfida.sol's identity. Reputation score computed entirely
+> from on-chain data — account age, transaction history, program
+> diversity, DAO participation. No oracles. Reproducible by anyone."
+> [Point at the breakdown chart]
+> "Every point is explainable. This is SIK-1."
 
-### Key Components
+**[1:10–1:30] The use case**
+> [Open /demo/dao-gate]
+> "A DAO gates access by reputation score. Three lines of code.
+> That's what infrastructure looks like."
 
-**`<IdentityCard domain="example.sol" />`**
-The shareable identity component any app can embed. Shows avatar, domain,
-reputation score, social links. This is the demo-able surface.
+**[1:30–1:50] The roadmap**
+> "SIK-1 is the core and reputation layer — shipped today.
+> SIK-2 is verifiable credentials and attestations — grant application
+> goes in this week. SIK-3 is ZK selective disclosure.
+> We are not done when this submission closes."
 
-**`<ReputationBreakdown score={score} breakdown={breakdown} />`**
-Bar chart showing each signal's contribution. Makes the score feel
-legitimate and transparent.
-
-**`<ProfileEditor />`**
-Connect wallet → detect .sol names → set default identity → edit metadata.
-Writes back to SNS Records V2.
-
-**`<CredentialList credentials={[]} />`**
-Empty state with clear "coming in SIK-2" messaging. Plant the seed for
-the next grant component.
-
-### Wallet Detection Flow
-
-```typescript
-// Detect all .sol names owned by connected wallet
-import { useDomainsForOwner } from "@bonfida/sns-react";
-
-const { result: domains } = useDomainsForOwner(connection, publicKey);
-// Returns string[] of domain names without .sol suffix
-```
+**[1:50–2:00] Close**
+> "SIK is to identity what SPL Token is to fungible tokens.
+> A standard that every app builds on top of."
 
 ---
 
-## What Makes This Win the Hackathon
+## Submission Text (Copy-Paste Ready)
 
-### The Demo Day Pitch (2 minutes)
+**Project name:** SIK — Solana Identity Kit
 
-1. Open `bonfida.sol` in the dashboard — show a real SNS name with a
-   populated identity profile
-2. Show the reputation score breakdown — "this is computed entirely
-   from on-chain data, no oracles, reproducible by anyone"
-3. Open the code — show `getIdentity("bonfida.sol", connection)` — 
-   "any app integrates identity with one line"
-4. Show the stub credentials section — "this is SIK-2, which we are
-   applying for grant funding to build"
+**One-liner:** The identity standard for Solana — turn any .sol name
+into a portable, programmable identity any app can read.
 
-### The Differentiator to Hammer
+**Description:**
+SIK is an open-source SDK and protocol that extends SNS `.sol` names
+into a full identity layer for the Solana ecosystem. Any app calls
+`getIdentity("name.sol")` and receives a structured identity object
+containing profile metadata, a reputation score computed entirely from
+on-chain activity, and a credentials interface ready for SIK-2.
 
-Every judge knows SNS has profile records. The question they will ask
-silently is: "how is this different from just reading SNS records?"
+The reputation layer is the novel contribution: a 0–100 score computed
+from account age, transaction volume, program diversity, DAO participation,
+SOL balance, and NFT holdings — no oracles, no off-chain data,
+reproducible by anyone with an RPC connection.
 
-The answer is the reputation score. SNS has no reputation primitive.
-SIK invents one. That is the novel contribution. Lead with it always.
+SIK is not an app. It is infrastructure. The dashboard is the reference
+implementation that proves the SDK works. The real product is
+`@sik/core` and `@sik/reputation` — open-source packages any Solana
+developer installs and uses.
 
----
+SIK-1 (core + reputation) ships with this hackathon. SIK-2 (credentials
+and attestations) is scoped for a Superteam grant application immediately
+after. SIK-3 (ZK selective disclosure) follows. The standard is in progress.
 
-## Codebase Rules
-
-- TypeScript strict mode everywhere
-- No `any` types — if you need `unknown`, use `unknown`
-- Every public function has JSDoc
-- `Promise.allSettled` for parallel RPC calls — never let one failed
-  record fetch break the whole identity resolution
-- Graceful degradation: partial identity is better than an error
-- RPC calls are expensive — batch where possible, cache always
-
----
-
-## Dependencies
-
-```json
-{
-  "@bonfida/spl-name-service": "latest",
-  "@bonfida/sns-react": "latest",
-  "@solana/web3.js": "^1.95.0",
-  "@solana/wallet-adapter-react": "latest",
-  "@solana/wallet-adapter-wallets": "latest",
-  "@solana/spl-token": "latest"
-}
-```
-
-Use web3.js v1, not kit. `@bonfida/spl-name-service` depends on v1.
-Do not mix.
+**Live URL:** https://sik.vercel.app
+**GitHub:** https://github.com/thewoodfish/sik
+**npm:** @sik/core | @sik/reputation
 
 ---
 
-## The Grant Path (Document This in the README)
+## Definition of Done for V2
 
-SIK is designed as a protocol with independently fundable components.
-
-| Component | Status | Grant Target |
-|---|---|---|
-| SIK-1: Core SDK + Reputation | ✅ Hackathon build | Done |
-| SIK-2: Credentials & Attestations | 🔲 Stubbed | Superteam Grant Round 2 |
-| SIK-3: Selective Disclosure | 🔲 Spec only | Solana Foundation Grant |
-| SIK-4: App Integrations | 🔲 Future | SNS Direct Grant |
-
-Include this table in the README. It signals that SIK is a roadmap,
-not a one-off project. Grant committees fund roadmaps differently
-than they fund apps.
-
----
-
-## SIK-1 Protocol Spec (docs/SIK-1.md)
-
-Write a one-page spec. It does not need to be perfect. It needs to exist.
-
-Cover:
-- The `SIKIdentity` type definition (canonical)
-- The resolution algorithm (SNS → owner → records → reputation)
-- The reputation scoring formula (each signal, weight, range)
-- The credential interface (even if empty for now)
-- Versioning strategy (SIK-1, SIK-2, etc.)
-
-Filing a spec document is what separates a hackathon project from
-a standard. Do this on Day 1, refine it as you build.
-
----
-
-## Submission Checklist
-
-- [ ] `getIdentity()` works on mainnet with a real .sol name
-- [ ] Reputation score is non-zero and explainable for a real wallet
-- [ ] Dashboard deployed (Vercel) — live URL for Demo Day
-- [ ] GitHub repo is public with clean README
-- [ ] `SIK-1.md` spec exists in `/docs`
-- [ ] Credentials section shows as "coming in SIK-2" — not hidden
-- [ ] Colosseum submission before May 11
-- [ ] Superteam Earn submission before the track deadline
-- [ ] Demo Day preparation: working mainnet demo, 2-minute pitch ready
+- [ ] Deployed to Vercel, live URL working
+- [ ] `/bonfida` loads with real reputation score
+- [ ] Reputation breakdown chart visible and accurate
+- [ ] MagicBlock real-time refresh wired
+- [ ] `/demo/dao-gate` page exists
+- [ ] `@sik/core` published to npm
+- [ ] `@sik/reputation` published to npm
+- [ ] README rewritten per structure above
+- [ ] Demo script memorised
+- [ ] Colosseum submission filed before May 11
+- [ ] Superteam Earn submission filed

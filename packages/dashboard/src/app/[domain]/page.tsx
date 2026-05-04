@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Connection } from "@solana/web3.js";
 import { getIdentity } from "@sik/core";
 import { IdentityCard } from "@/components/IdentityCard";
-import { ReputationBreakdownChart } from "@/components/ReputationBreakdownChart";
+import { RealtimeReputationUpdater } from "@/components/RealtimeReputationUpdater";
 import { CredentialList } from "@/components/CredentialList";
 
 interface PageProps {
@@ -54,12 +54,11 @@ export default async function DomainPage({ params }: PageProps) {
           <IdentityCard identity={identity} />
         </Suspense>
 
-        <Suspense fallback={<div className="animate-pulse bg-brand-card rounded-xl h-64" />}>
-          <ReputationBreakdownChart
-            score={identity.reputation.score}
-            breakdown={identity.reputation.breakdown}
-          />
-        </Suspense>
+        <RealtimeReputationUpdater
+          owner={identity.owner}
+          initialScore={identity.reputation.score}
+          initialBreakdown={identity.reputation.breakdown}
+        />
 
         <CredentialList credentials={identity.credentials} />
 
@@ -78,6 +77,12 @@ function Header() {
       <Link href="/" className="flex items-center gap-3">
         <span className="text-brand-purple font-bold text-xl">SIK</span>
         <span className="text-gray-500 text-sm">Solana Identity Kit</span>
+      </Link>
+      <Link
+        href="/demo/dao-gate"
+        className="text-sm text-gray-400 hover:text-brand-purple transition-colors"
+      >
+        DAO Gate demo →
       </Link>
     </header>
   );
