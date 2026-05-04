@@ -8,6 +8,11 @@ const ConnectWalletSection = dynamic(
   { ssr: false }
 );
 
+const SignInButton = dynamic(
+  () => import("@/components/SignInButton").then((m) => m.SignInButton),
+  { ssr: false }
+);
+
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col">
@@ -57,6 +62,13 @@ export default function HomePage() {
           </div>
 
           <LandingSearch />
+
+          <div className="flex flex-col items-center gap-3">
+            <SignInButton />
+            <p className="text-gray-600 text-xs">
+              Connect your wallet above, then sign in with your .sol name
+            </p>
+          </div>
         </div>
       </section>
 
@@ -75,9 +87,9 @@ export default function HomePage() {
           />
           <FeatureCard
             title="Credentials"
-            description="Attestations layer — stubbed in SIK-1. On-chain program deployment planned for SIK-2."
+            description="SAS-backed verifiable attestations. Any issuer can publish on-chain credentials that appear alongside profile and reputation."
             color="text-yellow-400"
-            badge="SIK-2"
+            badge="Live"
           />
         </div>
       </section>

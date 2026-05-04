@@ -14,6 +14,8 @@
     "@bonfida/sns-react": "latest",
     "@tanstack/react-query": "^5.0.0",
     "@bonfida/spl-name-service": "latest",
+    "@sik/agent": "workspace:*",
+    "@sik/auth": "workspace:*",
     "@sik/core": "workspace:*",
     "@sik/credentials": "workspace:*",
     "@sik/reputation": "workspace:*",

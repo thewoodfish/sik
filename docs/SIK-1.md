@@ -42,7 +42,7 @@ interface SIKIdentity {
     computedAt:  number;              // unix timestamp (ms)
   };
 
-  credentials: Credential[];  // always [] in SIK-1
+  credentials: SIKCredential[];  // live via SAS — see @sik/credentials
 
   fetchedAt: number;          // unix timestamp (ms)
 }
@@ -139,26 +139,40 @@ total = accountAge + transactionVolume + programDiversity
 
 ---
 
-## 4. Credential Interface (Stub)
+## 4. Credential Interface (Live — SIK-2)
 
-The credential type is defined in SIK-1 but always returns `[]`.
-Full implementation in SIK-2.
+Credentials are live via the Solana Attestation Service. `getIdentity()` now
+returns populated credentials for any wallet that holds SAS attestations.
 
 ```typescript
-interface Credential {
-  id:       string;
-  issuer:   string;           // issuer wallet address
-  type:     string;           // e.g. "KYC", "Github", "ENS"
-  issuedAt: number;           // unix timestamp
-  data:     Record<string, unknown>;
+interface SIKCredential {
+  id:        string;           // attestation PDA (base58)
+  issuer:    { address: string; credentialPda: string; name: string | null };
+  schema:    { pda: string; name: string };
+  issuedAt:  number;           // unix timestamp
+  expiresAt: number | null;    // null = no expiry
+  expired:   boolean;
+  data:      Record<string, unknown>; // deserialized schema fields
 }
 ```
 
-### Planned SIK-2 Architecture
+### SIK-2 Architecture
 
-- On-chain program: issuers submit signed credential accounts
-- Identity resolution includes credential accounts owned by the domain
-- ZK selective disclosure: SIK-3 (Solana Foundation Grant target)
+- No custom on-chain program — bridges to the Solana Attestation Service
+- `@sik/credentials` queries SAS via `getProgramAccounts` (memcmp on nonce)
+- Decodes raw account bytes with `sas-lib` Borsh decoders
+- Fully backwards-compatible: wallets with no SAS attestations return `[]`
+
+### Issue Credentials
+
+```bash
+# Devnet test
+pnpm --filter @sik/credentials issue-demo
+
+# Mainnet — issue to a specific wallet
+RECIPIENT=<wallet> RPC_URL=https://api.mainnet-beta.solana.com \
+  pnpm --filter @sik/credentials issue-demo
+```
 
 ---
 
@@ -167,9 +181,9 @@ interface Credential {
 | Version | Status | Description |
 |---|---|---|
 | SIK-1 | Active | Core SDK + Reputation scoring |
-| SIK-2 | Planned | Credentials & on-chain attestations |
-| SIK-3 | Spec | ZK selective disclosure |
-| SIK-4 | Future | App integration SDKs |
+| SIK-2 | Active | Credentials via Solana Attestation Service |
+| SIK-3 | Active | Sign In with .sol + Agent Identity |
+| SIK-4 | Planned | ZK selective disclosure |
 
 Backwards compatibility: `SIKIdentity.credentials` is always a valid array.
 Apps depending on `[]` today will receive populated data in SIK-2 with no

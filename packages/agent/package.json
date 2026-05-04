@@ -1,0 +1,28 @@
+{
+  "name": "@sik/agent",
+  "version": "1.0.0",
+  "description": "Agent Identity — on-chain identity for autonomous AI agents using .sol names",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@bonfida/spl-name-service": "latest",
+    "@sik/core": "workspace:*",
+    "@sik/credentials": "workspace:*",
+    "@solana/web3.js": "^1.95.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@sik/auth",
+  "version": "1.0.0",
+  "description": "Sign In with .sol — standardised authentication sessions for Solana apps",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@bonfida/spl-name-service": "latest",
+    "@sik/core": "workspace:*",
+    "@solana/web3.js": "^1.95.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
