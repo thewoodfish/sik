@@ -1,5 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { computeReputation } from "@sik/reputation";
+import { getCredentials } from "@sik/credentials";
 import type { SIKIdentity, GetIdentityOptions } from "./types";
 import { resolveIdentity } from "./resolve";
 import { identityCache } from "./cache";
@@ -32,7 +33,16 @@ export async function getIdentity(
     connection
   );
 
-  const breakdown = await computeReputation(new PublicKey(owner), connection);
+  const ownerPubkey = new PublicKey(owner);
+
+  const [reputationResult, credentialsResult] = await Promise.allSettled([
+    computeReputation(ownerPubkey, connection),
+    getCredentials(ownerPubkey, connection),
+  ]);
+
+  const breakdown = reputationResult.status === "fulfilled"
+    ? reputationResult.value
+    : { accountAge: 0, transactionVolume: 0, programDiversity: 0, daoParticipation: 0, solBalance: 0, nftHoldings: 0 };
   const score = Object.values(breakdown).reduce((sum, v) => sum + v, 0);
 
   const identity: SIKIdentity = {
@@ -44,7 +54,7 @@ export async function getIdentity(
       breakdown,
       computedAt: Date.now(),
     },
-    credentials: [],
+    credentials: credentialsResult.status === "fulfilled" ? credentialsResult.value : [],
     fetchedAt: Date.now(),
   };
 

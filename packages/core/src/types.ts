@@ -1,4 +1,5 @@
 export type { ReputationBreakdown } from "@sik/reputation";
+export type { SIKCredential } from "@sik/credentials";
 
 export interface SIKIdentity {
   /** The .sol domain name */
@@ -23,19 +24,9 @@ export interface SIKIdentity {
     computedAt: number;
   };
 
-  /** Always [] in SIK-1; populated in SIK-2 */
-  credentials: Credential[];
+  credentials: import("@sik/credentials").SIKCredential[];
 
   fetchedAt: number;
-}
-
-/** Stub type — fully implemented in SIK-2 */
-export interface Credential {
-  id: string;
-  issuer: string;
-  type: string;
-  issuedAt: number;
-  data: Record<string, unknown>;
 }
 
 export interface GetIdentityOptions {

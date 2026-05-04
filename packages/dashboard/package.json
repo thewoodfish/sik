@@ -15,6 +15,7 @@
     "@tanstack/react-query": "^5.0.0",
     "@bonfida/spl-name-service": "latest",
     "@sik/core": "workspace:*",
+    "@sik/credentials": "workspace:*",
     "@sik/reputation": "workspace:*",
     "@solana/wallet-adapter-base": "latest",
     "@solana/wallet-adapter-react": "latest",
