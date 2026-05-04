@@ -1,0 +1,5 @@
+{
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter @sik/reputation build && pnpm --filter @sik/core build && cd packages/dashboard && npx next build",
+  "framework": "nextjs"
+}
