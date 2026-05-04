@@ -182,7 +182,7 @@ Current README needs these sections in this order:
 > programmable identity any app can read.
 
 ### 2. Live demo link
-> **Live:** https://sik.vercel.app
+> **Live:** https://sik-phi.vercel.app
 
 ### 3. The integration (30 seconds to understand)
 ```typescript
@@ -284,7 +284,7 @@ SIK-1 (core + reputation) ships with this hackathon. SIK-2 (credentials
 and attestations) is scoped for a Superteam grant application immediately
 after. SIK-3 (ZK selective disclosure) follows. The standard is in progress.
 
-**Live URL:** https://sik.vercel.app
+**Live URL:** https://sik-phi.vercel.app
 **GitHub:** https://github.com/thewoodfish/sik
 **npm:** @sik/core | @sik/reputation
 

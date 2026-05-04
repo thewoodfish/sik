@@ -2,7 +2,7 @@
 
 The identity layer for Solana. Turn any `.sol` name into a portable, programmable identity any app can read.
 
-**Live:** https://sik.vercel.app · **npm:** `@sik/core` · `@sik/reputation`
+**Live:** https://sik-phi.vercel.app · **npm:** `@sik/core` · `@sik/reputation`
 
 ---
 
