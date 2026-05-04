@@ -61,7 +61,8 @@ export function scoreDaoParticipation(signatures: ConfirmedSignatureInfo[]): num
 
 export function scoreSolBalance(lamports: number): number {
   const sol = lamports / LAMPORTS_PER_SOL;
-  return Math.min(10, Math.floor(sol));
+  // 1 point per 0.1 SOL, max 10 — so 1 SOL = 10 pts, 0.1 SOL = 1 pt
+  return Math.min(10, Math.floor(sol * 10));
 }
 
 export function scoreNftHoldings(tokenAccounts: ParsedTokenAccountsByOwner): number {
