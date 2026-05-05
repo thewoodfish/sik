@@ -1,7 +1,7 @@
 {
   "name": "@sik/auth",
   "version": "1.0.0",
-  "description": "Sign In with .sol — standardised authentication sessions for Solana apps",
+  "description": "Sign In with .sol \u2014 standardised authentication sessions for Solana apps",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "typescript": "^5.4.5"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
