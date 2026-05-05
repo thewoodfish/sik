@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @sik/reputation build && pnpm --filter @sik/credentials build && pnpm --filter @sik/auth build && pnpm --filter @sik/agent build && pnpm --filter @sik/core build && pnpm --filter @sik/dashboard build",
+  "buildCommand": "pnpm --filter @sik-sdk/reputation build && pnpm --filter @sik-sdk/credentials build && pnpm --filter @sik-sdk/auth build && pnpm --filter @sik-sdk/agent build && pnpm --filter @sik-sdk/core build && pnpm --filter @sik-sdk/dashboard build",
   "installCommand": "pnpm install",
   "outputDirectory": "packages/dashboard/.next",
   "framework": "nextjs"

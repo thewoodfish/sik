@@ -1,4 +1,4 @@
-import type { AgentIdentity } from "@sik/agent";
+import type { AgentIdentity } from "@sik-sdk/agent";
 
 interface Props {
   identity: AgentIdentity;

@@ -1,5 +1,5 @@
 {
-  "name": "@sik/auth",
+  "name": "@sik-sdk/auth",
   "version": "1.0.0",
   "description": "Sign In with .sol \u2014 standardised authentication sessions for Solana apps",
   "main": "./dist/index.js",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@bonfida/spl-name-service": "latest",
-    "@sik/core": "workspace:*",
+    "@sik-sdk/core": "workspace:*",
     "@solana/web3.js": "^1.95.0",
     "tweetnacl": "^1.0.3"
   },

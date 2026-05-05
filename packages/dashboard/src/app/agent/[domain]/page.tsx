@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Connection } from "@solana/web3.js";
-import { getAgentIdentity } from "@sik/agent";
+import { getAgentIdentity } from "@sik-sdk/agent";
 import { AgentCard } from "@/components/AgentCard";
 import { CredentialList } from "@/components/CredentialList";
 

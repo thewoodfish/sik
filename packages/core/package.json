@@ -1,5 +1,5 @@
 {
-  "name": "@sik/core",
+  "name": "@sik-sdk/core",
   "version": "0.1.0",
   "description": "Core SDK for the Solana Identity Kit \u2014 getIdentity() and shared types",
   "main": "./dist/index.js",
@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@bonfida/spl-name-service": "latest",
-    "@sik/credentials": "workspace:*",
-    "@sik/reputation": "workspace:*",
+    "@sik-sdk/credentials": "workspace:*",
+    "@sik-sdk/reputation": "workspace:*",
     "@solana/web3.js": "^1.95.0"
   },
   "devDependencies": {

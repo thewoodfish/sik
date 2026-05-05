@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import type { SIKIdentity } from "@sik/core";
+import type { SIKIdentity } from "@sik-sdk/core";
 
 const THRESHOLD = 30;
 

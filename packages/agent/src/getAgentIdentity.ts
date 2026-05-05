@@ -1,8 +1,8 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { resolve, getRecordV2, Record as SNSRecord } from "@bonfida/spl-name-service";
-import { getIdentity } from "@sik/core";
-import { getCredentials } from "@sik/credentials";
-import type { SIKCredential } from "@sik/credentials";
+import { getIdentity } from "@sik-sdk/core";
+import { getCredentials } from "@sik-sdk/credentials";
+import type { SIKCredential } from "@sik-sdk/credentials";
 import { computeAgentTrust } from "./trust";
 import { detectOperator } from "./detectOperator";
 import type { AgentIdentity, AgentCapability } from "./types";

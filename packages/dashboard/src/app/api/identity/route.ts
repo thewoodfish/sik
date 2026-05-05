@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Connection } from "@solana/web3.js";
-import { getIdentity } from "@sik/core";
+import { getIdentity } from "@sik-sdk/core";
 
 export async function GET(req: NextRequest) {
   const domain = req.nextUrl.searchParams.get("domain");

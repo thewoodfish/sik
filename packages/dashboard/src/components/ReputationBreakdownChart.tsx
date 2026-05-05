@@ -1,4 +1,4 @@
-import type { ReputationBreakdown } from "@sik/core";
+import type { ReputationBreakdown } from "@sik-sdk/core";
 
 interface Props {
   score: number;

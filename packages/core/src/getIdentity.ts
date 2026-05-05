@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { computeReputation } from "@sik/reputation";
-import { getCredentials } from "@sik/credentials";
+import { computeReputation } from "@sik-sdk/reputation";
+import { getCredentials } from "@sik-sdk/credentials";
 import type { SIKIdentity, GetIdentityOptions } from "./types";
 import { resolveIdentity } from "./resolve";
 import { identityCache } from "./cache";

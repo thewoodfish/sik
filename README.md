@@ -2,14 +2,14 @@
 
 The identity standard for humans and agents on Solana. One SDK call resolves any `.sol` name to a full identity — profile, reputation, credentials, and authentication sessions.
 
-**Live:** https://sik-phi.vercel.app · **npm:** `@sik/core` · `@sik/reputation` · `@sik/auth` · `@sik/agent` · `@sik/credentials`
+**Live:** https://sik-phi.vercel.app · **npm:** `@sik-sdk/core` · `@sik-sdk/reputation` · `@sik-sdk/auth` · `@sik-sdk/agent` · `@sik-sdk/credentials`
 
 ---
 
 ```typescript
-import { getIdentity }      from "@sik/core";
-import { signIn }           from "@sik/auth";
-import { getAgentIdentity } from "@sik/agent";
+import { getIdentity }      from "@sik-sdk/core";
+import { signIn }           from "@sik-sdk/auth";
+import { getAgentIdentity } from "@sik-sdk/agent";
 
 // Resolve any .sol identity
 const identity = await getIdentity("bonfida.sol", connection);
@@ -38,12 +38,12 @@ Every Solana app that needs identity — DAOs, marketplaces, AI agents — rebui
 
 | Package | Description |
 |---|---|
-| [`@sik/core`](packages/core) | `getIdentity()` — resolve any `.sol` to a full `SIKIdentity` |
-| [`@sik/reputation`](packages/reputation) | On-chain reputation scoring engine (0–100) |
-| [`@sik/auth`](packages/auth) | `signIn()` — Sign In with .sol, standardised auth sessions |
-| [`@sik/agent`](packages/agent) | `getAgentIdentity()` — trust scores and capabilities for AI agents |
-| [`@sik/credentials`](packages/credentials) | SAS-backed verifiable on-chain attestations |
-| [`@sik/dashboard`](packages/dashboard) | Next.js reference app — live at sik-phi.vercel.app |
+| [`@sik-sdk/core`](packages/core) | `getIdentity()` — resolve any `.sol` to a full `SIKIdentity` |
+| [`@sik-sdk/reputation`](packages/reputation) | On-chain reputation scoring engine (0–100) |
+| [`@sik-sdk/auth`](packages/auth) | `signIn()` — Sign In with .sol, standardised auth sessions |
+| [`@sik-sdk/agent`](packages/agent) | `getAgentIdentity()` — trust scores and capabilities for AI agents |
+| [`@sik-sdk/credentials`](packages/credentials) | SAS-backed verifiable on-chain attestations |
+| [`@sik-sdk/dashboard`](packages/dashboard) | Next.js reference app — live at sik-phi.vercel.app |
 
 ## Quick Start
 

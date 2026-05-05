@@ -1,5 +1,5 @@
-export type { ReputationBreakdown } from "@sik/reputation";
-export type { SIKCredential } from "@sik/credentials";
+export type { ReputationBreakdown } from "@sik-sdk/reputation";
+export type { SIKCredential } from "@sik-sdk/credentials";
 
 export interface SIKIdentity {
   /** The .sol domain name */
@@ -20,11 +20,11 @@ export interface SIKIdentity {
 
   reputation: {
     score: number;
-    breakdown: import("@sik/reputation").ReputationBreakdown;
+    breakdown: import("@sik-sdk/reputation").ReputationBreakdown;
     computedAt: number;
   };
 
-  credentials: import("@sik/credentials").SIKCredential[];
+  credentials: import("@sik-sdk/credentials").SIKCredential[];
 
   fetchedAt: number;
 }

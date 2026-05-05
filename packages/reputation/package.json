@@ -1,5 +1,5 @@
 {
-  "name": "@sik/reputation",
+  "name": "@sik-sdk/reputation",
   "version": "0.1.0",
   "description": "On-chain reputation scoring engine for SIK identities",
   "main": "./dist/index.js",

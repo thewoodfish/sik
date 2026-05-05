@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { computeReputation, type ReputationBreakdown } from "@sik/reputation";
+import { computeReputation, type ReputationBreakdown } from "@sik-sdk/reputation";
 import { ReputationBreakdownChart } from "@/components/ReputationBreakdownChart";
 
 interface Props {

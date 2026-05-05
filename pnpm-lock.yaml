@@ -20,10 +20,10 @@ importers:
       '@bonfida/spl-name-service':
         specifier: latest
         version: 3.0.21(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@sik/core':
+      '@sik-sdk/core':
         specifier: workspace:*
         version: link:../core
-      '@sik/credentials':
+      '@sik-sdk/credentials':
         specifier: workspace:*
         version: link:../credentials
       '@solana/web3.js':
@@ -39,7 +39,7 @@ importers:
       '@bonfida/spl-name-service':
         specifier: latest
         version: 3.0.21(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@sik/core':
+      '@sik-sdk/core':
         specifier: workspace:*
         version: link:../core
       '@solana/web3.js':
@@ -58,10 +58,10 @@ importers:
       '@bonfida/spl-name-service':
         specifier: latest
         version: 3.0.21(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@sik/credentials':
+      '@sik-sdk/credentials':
         specifier: workspace:*
         version: link:../credentials
-      '@sik/reputation':
+      '@sik-sdk/reputation':
         specifier: workspace:*
         version: link:../reputation
       '@solana/web3.js':
@@ -99,19 +99,19 @@ importers:
       '@bonfida/spl-name-service':
         specifier: latest
         version: 3.0.21(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@sik/agent':
+      '@sik-sdk/agent':
         specifier: workspace:*
         version: link:../agent
-      '@sik/auth':
+      '@sik-sdk/auth':
         specifier: workspace:*
         version: link:../auth
-      '@sik/core':
+      '@sik-sdk/core':
         specifier: workspace:*
         version: link:../core
-      '@sik/credentials':
+      '@sik-sdk/credentials':
         specifier: workspace:*
         version: link:../credentials
-      '@sik/reputation':
+      '@sik-sdk/reputation':
         specifier: workspace:*
         version: link:../reputation
       '@solana/wallet-adapter-base':

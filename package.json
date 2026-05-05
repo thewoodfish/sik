@@ -5,7 +5,7 @@
   "description": "Solana Identity Kit — open identity standard built on SNS",
   "scripts": {
     "build": "pnpm -r build",
-    "dev": "pnpm --filter @sik/dashboard dev",
+    "dev": "pnpm --filter @sik-sdk/dashboard dev",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "clean": "pnpm -r clean"

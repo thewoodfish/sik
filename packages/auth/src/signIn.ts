@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getAllDomains, reverseLookupBatch } from "@bonfida/spl-name-service";
-import { getIdentity } from "@sik/core";
+import { getIdentity } from "@sik-sdk/core";
 import { SIKAuthError } from "./error";
 import type { SIKSession, SignInOptions } from "./types";
 

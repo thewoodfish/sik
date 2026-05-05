@@ -10,17 +10,17 @@ SIK is the identity standard for humans and agents on Solana.
 
 This file covers three features to ship before May 11:
 
-1. **Sign In with .sol** — `@sik/auth` — Social Identity theme
-2. **Agent Identity** — `@sik/agent` — Agent Identity theme
-3. **SIK-2 Credentials** — `@sik/credentials` — strengthens both themes
+1. **Sign In with .sol** — `@sik-sdk/auth` — Social Identity theme
+2. **Agent Identity** — `@sik-sdk/agent` — Agent Identity theme
+3. **SIK-2 Credentials** — `@sik-sdk/credentials` — strengthens both themes
 
 ---
 
 ## Current State (Do Not Rebuild)
 
 Already live at `sik-phi.vercel.app`:
-- `@sik/core` — `getIdentity()` working on mainnet
-- `@sik/reputation` — real scores, 6-signal breakdown
+- `@sik-sdk/core` — `getIdentity()` working on mainnet
+- `@sik-sdk/reputation` — real scores, 6-signal breakdown
 - Dashboard — `/[domain]` page, DAO gate demo, landing search
 - `docs/SIK-1.md` — protocol spec exists
 
@@ -43,7 +43,7 @@ sik/
 
 ---
 
-## FEATURE 1: Sign In with .sol (`@sik/auth`)
+## FEATURE 1: Sign In with .sol (`@sik-sdk/auth`)
 
 ### What It Is
 
@@ -62,7 +62,7 @@ Nobody does standardised `.sol` identity sessions. This is the gap.
 export interface SIKSession {
   domain: string;              // "thewoodfish.sol"
   owner: string;               // wallet address (base58)
-  identity: SIKIdentity;       // full identity from @sik/core
+  identity: SIKIdentity;       // full identity from @sik-sdk/core
   signature: string;           // proof of ownership (base58)
   message: string;             // the message that was signed
   signedAt: number;            // unix timestamp
@@ -82,7 +82,7 @@ export interface SignInOptions {
 // packages/auth/src/signIn.ts
 
 import { resolve, getAllDomains } from "@bonfida/spl-name-service";
-import { getIdentity } from "@sik/core";
+import { getIdentity } from "@sik-sdk/core";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 export async function signIn(
@@ -269,7 +269,7 @@ function DomainPicker({
 
 ---
 
-## FEATURE 2: Agent Identity (`@sik/agent`)
+## FEATURE 2: Agent Identity (`@sik-sdk/agent`)
 
 ### What It Is
 
@@ -320,7 +320,7 @@ export interface AgentIdentity {
   trustBreakdown: AgentTrustBreakdown;
 
   // Credentials — SAS attestations authorizing the agent
-  credentials: SIKCredential[]; // from @sik/credentials
+  credentials: SIKCredential[]; // from @sik-sdk/credentials
 
   // Profile from SNS Records
   profile: {
@@ -355,8 +355,8 @@ export interface AgentRegistration {
 
 import { Connection, PublicKey } from "@solana/web3.js";
 import { resolve, getRecordV2, Record } from "@bonfida/spl-name-service";
-import { getIdentity } from "@sik/core";
-import { getCredentials } from "@sik/credentials";
+import { getIdentity } from "@sik-sdk/core";
+import { getCredentials } from "@sik-sdk/credentials";
 import { computeAgentTrust } from "./trust";
 import { detectOperator } from "./detectOperator";
 
@@ -419,7 +419,7 @@ export async function getAgentIdentity(
 // packages/agent/src/trust.ts
 
 import { Connection, PublicKey } from "@solana/web3.js";
-import { getIdentity } from "@sik/core";
+import { getIdentity } from "@sik-sdk/core";
 
 export async function computeAgentTrust(
   agent: PublicKey,
@@ -603,7 +603,7 @@ export type {
 
 ---
 
-## FEATURE 3: `@sik/credentials` (SIK-2 via SAS)
+## FEATURE 3: `@sik-sdk/credentials` (SIK-2 via SAS)
 
 ### Setup
 
@@ -697,13 +697,13 @@ async function mapAttestation(
 }
 ```
 
-### Wire into `@sik/core`
+### Wire into `@sik-sdk/core`
 
 In `packages/core/src/getIdentity.ts`, add credentials to the
 parallel fetch block:
 
 ```typescript
-import { getCredentials } from "@sik/credentials";
+import { getCredentials } from "@sik-sdk/credentials";
 
 const [profileResult, reputationResult, credentialsResult] =
   await Promise.allSettled([
@@ -804,7 +804,7 @@ Add between the search box and the demo link:
 - Implement `getAgentIdentity()`, `computeAgentTrust()`, `detectOperator()`
 - Scaffold `packages/credentials/`
 - Implement `getCredentials()` via SAS
-- Wire credentials into `getIdentity()` in `@sik/core`
+- Wire credentials into `getIdentity()` in `@sik-sdk/core`
 - Add `/agent/[domain]` page to dashboard
 - Run `issue-demo-credential.ts` on devnet
 
@@ -812,7 +812,7 @@ Add between the search box and the demo link:
 - Issue demo credential on mainnet
 - Test all four pages: `/`, `/bonfida.sol`, `/agent/[agent-domain]`,
   `/demo/dao-gate`
-- Publish `@sik/auth`, `@sik/agent`, `@sik/credentials` to npm
+- Publish `@sik-sdk/auth`, `@sik-sdk/agent`, `@sik-sdk/credentials` to npm
 - Update `docs/SIK-1.md` to reflect all shipped features
 - Deploy to Vercel
 - Record demo video
@@ -823,11 +823,11 @@ Add between the search box and the demo link:
 
 | Package | Status |
 |---|---|
-| `@sik/core` | ✅ Publish |
-| `@sik/reputation` | ✅ Publish |
-| `@sik/auth` | ← Publish after Day 1 |
-| `@sik/agent` | ← Publish after Day 2 |
-| `@sik/credentials` | ← Publish after Day 2 |
+| `@sik-sdk/core` | ✅ Publish |
+| `@sik-sdk/reputation` | ✅ Publish |
+| `@sik-sdk/auth` | ← Publish after Day 1 |
+| `@sik-sdk/agent` | ← Publish after Day 2 |
+| `@sik-sdk/credentials` | ← Publish after Day 2 |
 
 ```bash
 # In each package after build:
@@ -848,17 +848,17 @@ SIK is an open identity protocol built on SNS that covers both tracks
 of this hackathon in a single, composable SDK.
 
 **Social Identity:** Any Solana app integrates `.sol` login with
-`signIn()` from `@sik/auth` — a standardised authentication session
+`signIn()` from `@sik-sdk/auth` — a standardised authentication session
 that returns profile, reputation, and credentials alongside the
 cryptographic proof of ownership. No custom identity logic required.
 
 **Agent Identity:** Autonomous agents register `.sol` identities with
-on-chain capabilities and trust signals via `@sik/agent`. An agent's
+on-chain capabilities and trust signals via `@sik-sdk/agent`. An agent's
 trust score is computed from operator reputation, transaction
 consistency, authorization depth, and program specialization —
 different signals from a human, right signal for a machine.
 
-**Credentials:** `@sik/credentials` connects the Solana Attestation
+**Credentials:** `@sik-sdk/credentials` connects the Solana Attestation
 Service to `.sol` identity. Any app calls `getIdentity()` and receives
 SAS-verified credentials alongside profile and reputation, without
 knowing anything about SAS internals.
@@ -869,7 +869,7 @@ is live at sik-phi.vercel.app.
 
 **Live:** https://sik-phi.vercel.app
 **GitHub:** https://github.com/thewoodfish/sik
-**Packages:** @sik/core · @sik/reputation · @sik/auth · @sik/agent · @sik/credentials
+**Packages:** @sik-sdk/core · @sik-sdk/reputation · @sik-sdk/auth · @sik-sdk/agent · @sik-sdk/credentials
 
 ---
 

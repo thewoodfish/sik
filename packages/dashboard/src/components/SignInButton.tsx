@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { signIn, SIKAuthError } from "@sik/auth";
+import { signIn, SIKAuthError } from "@sik-sdk/auth";
 
 export function SignInButton() {
   const { publicKey, signMessage, connected } = useWallet();

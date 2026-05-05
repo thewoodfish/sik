@@ -1,4 +1,4 @@
-import type { SIKCredential } from "@sik/credentials";
+import type { SIKCredential } from "@sik-sdk/credentials";
 
 export type AgentCapability =
   | "payments"

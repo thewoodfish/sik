@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { SIKIdentity } from "@sik/core";
+import type { SIKIdentity } from "@sik-sdk/core";
 
 interface Props {
   identity: SIKIdentity;

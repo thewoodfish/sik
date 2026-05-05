@@ -1,4 +1,4 @@
-import type { SIKIdentity } from "@sik/core";
+import type { SIKIdentity } from "@sik-sdk/core";
 
 export interface SIKSession {
   domain: string;
