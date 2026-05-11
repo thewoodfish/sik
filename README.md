@@ -131,14 +131,97 @@ because technical signals can be engineered, while reputation takes time to buil
 
 ## Programmable Identity
 
-Programmable means the identity responds to on-chain behaviour.
+Most identity systems are static. You fill in a profile once.
+It sits there. Nothing changes unless you manually update it.
 
-- Reputation updates as you transact
-- Credentials gate access to apps and protocols
-- An agent's trust score reflects its actual behaviour — not its creator's word
-- Any protocol reads the same identity without coordination
+SIK identity is live. It reads the chain every time it is called.
+The moment a user casts a governance vote, their DAO participation
+signal increases. The moment an agent completes its hundredth
+consistent transaction, its consistency score improves. No one
+has to update anything — the behaviour is the identity.
 
-This is not a profile page. It is an on-chain primitive.
+This is what "programmable" means: **identity that changes because
+you did something, not because you said something.**
+
+### What changes and when
+
+**Reputation score** recalculates on every `getIdentity()` call against
+live on-chain state. A user who was borderline last week may qualify
+today — and your app reflects that automatically, with no migration,
+no manual sync, no webhook to maintain.
+
+```typescript
+// Tuesday: score 48 — just below your DAO threshold
+const identity = await getIdentity("alice.sol", connection)
+// identity.reputation.score → 48
+
+// Alice votes in three governance proposals over the weekend
+
+// Monday: same call, live data, new score
+const identity = await getIdentity("alice.sol", connection)
+// identity.reputation.score → 63 — she now qualifies
+```
+
+**Credentials** appear the moment they are issued on-chain.
+A protocol issues a SAS attestation to a user's wallet —
+the next `getIdentity()` call returns it in `credentials[]`.
+No integration work on the issuer's side. No sync required on yours.
+
+```typescript
+// Before: user completes a KYC flow with a third-party issuer
+identity.credentials // → []
+
+// Issuer writes attestation to Solana
+// No webhook, no API call, no database update needed on your end
+
+// After: same call to getIdentity()
+identity.credentials // → [{ schema: "kyc-verified", expired: false, ... }]
+```
+
+**Agent trust** evolves as the agent acts. An agent that has been
+operating consistently for six months has a fundamentally different
+trust profile than one deployed yesterday — and any protocol that
+calls `getAgentIdentity()` sees that difference automatically.
+
+### Why this matters for protocol design
+
+Static allowlists decay. A wallet on your allowlist today may be
+compromised tomorrow. A wallet excluded today may have earned
+access by next month. Maintaining lists is operational overhead
+that grows with your user base.
+
+Programmable identity inverts the model. Instead of maintaining
+who is allowed, you define the standard — and the chain maintains
+the list for you.
+
+```typescript
+// Instead of: maintaining an allowlist of 10,000 addresses
+const allowed = new Set(["addr1", "addr2", ...])
+if (!allowed.has(userAddress)) throw new Error("Not allowed")
+
+// SIK: define the standard once, the chain enforces it
+const identity = await getIdentity(userDomain, connection)
+if (identity.reputation.score < 60) throw new Error("Below threshold")
+// The "allowlist" is now every wallet on Solana with score >= 60
+// It updates itself. You never touch it again.
+```
+
+### Caching and freshness
+
+By default, `getIdentity()` caches results for 1 hour. For
+high-stakes decisions (large withdrawals, governance proposals),
+bypass the cache for a fresh read:
+
+```typescript
+// Force a live read — no cache
+const identity = await getIdentity(domain, connection, { cache: false })
+
+// Custom TTL — re-fetch every 5 minutes in a live dashboard
+const identity = await getIdentity(domain, connection, { cacheTTL: 300_000 })
+```
+
+For most apps, the 1-hour default is the right tradeoff between
+RPC cost and data freshness. Reputation does not change minute to minute.
 
 ---
 
