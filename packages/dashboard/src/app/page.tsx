@@ -79,10 +79,10 @@ export default function HomePage() {
               <li className="flex items-center gap-2"><span className="text-cyan-400">✓</span> Any protocol verifies the agent before granting access</li>
             </ul>
             <Link
-              href="/demo/dao-gate"
+              href="/agent/bonfida.sol"
               className="inline-block mt-2 text-sm text-cyan-400 hover:underline"
             >
-              Try agent gate demo →
+              Try bonfida.sol as agent →
             </Link>
           </div>
         </div>

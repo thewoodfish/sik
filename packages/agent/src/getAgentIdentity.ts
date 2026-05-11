@@ -31,9 +31,21 @@ export async function getAgentIdentity(
   const operator = operatorResult.status === "fulfilled" ? operatorResult.value : null;
   const creds = credentialsResult.status === "fulfilled" ? credentialsResult.value : [];
 
-  // Boost trust based on number of credentials (authorization depth)
-  const authorizationDepth = Math.min(25, creds.length * 5);
-  trust.breakdown.authorizationDepth = authorizationDepth;
+  // Wire operator reputation: fetch the operator's SIK score and inherit up to 30pts
+  if (operator?.address) {
+    try {
+      const operatorIdentity = await getIdentity(operator.address, connection).catch(() => null);
+      if (operatorIdentity) {
+        trust.breakdown.operatorReputation = Math.round(
+          (operatorIdentity.reputation.score / 100) * 30
+        );
+      }
+    } catch {
+      // best-effort — leave at 0 if it fails
+    }
+  }
+
+  trust.breakdown.authorizationDepth = Math.min(25, creds.length * 5);
   trust.score = Object.values(trust.breakdown).reduce((a, b) => a + b, 0);
 
   const capabilities = extractCapabilities(creds);
