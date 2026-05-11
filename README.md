@@ -651,7 +651,22 @@ npm install @sik-sdk/core @sik-sdk/reputation
 
 ## Protocol Spec
 
-[SIK-1 →](./docs/SIK-1.md)
+SIK is designed to be implemented by anyone, not just this SDK.
+The spec defines exactly what a conforming implementation must do:
+the `SIKIdentity` and `AgentIdentity` types, the resolution algorithms,
+the reputation scoring formula with exact math, and the agent trust
+scoring formula — so that any team can build a compatible implementation
+and the ecosystem stays coherent.
+
+If you are building a protocol that needs to verify identities,
+read the spec rather than reading the SDK source — the spec is the
+source of truth.
+
+If you want to propose changes to the scoring signals or weights,
+open an issue against the spec. Changes to the formula affect every
+integration downstream, so they warrant explicit versioning.
+
+**[SIK-1 Protocol Specification →](./docs/SIK-1.md)**
 
 ---
 
