@@ -1,6 +1,6 @@
 {
   "name": "@sik-sdk/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core SDK for the Solana Identity Kit \u2014 getIdentity() and shared types",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

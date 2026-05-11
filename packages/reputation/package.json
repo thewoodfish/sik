@@ -1,6 +1,6 @@
 {
   "name": "@sik-sdk/reputation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "On-chain reputation scoring engine for SIK identities",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
