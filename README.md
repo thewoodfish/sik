@@ -105,10 +105,31 @@ if (!agent.capabilities.includes("payments")) {
 
 ## For AI Agent Builders
 
-Give your agent a `.sol` name.
-Register its capabilities on-chain.
+Give your agent a `.sol` name. Register its capabilities on-chain.
 Any protocol that uses SIK can verify your agent before granting access —
 without you having to negotiate trust manually with each integration.
+
+**How to register an agent identity:**
+
+1. **Get a `.sol` name** for your agent wallet at [naming.bonfida.org](https://naming.bonfida.org)
+2. **Set SNS records** — endpoint and repo identify your agent on-chain:
+   ```typescript
+   // Set via Bonfida SNS app, or programmatically:
+   // Record.Url   → your agent's API endpoint
+   // Record.Github → your agent's code repository
+   ```
+3. **Issue capability credentials** via the Solana Attestation Service —
+   schema names map directly to capabilities SIK recognises:
+   `payments` · `web_search` · `code_execution` · `data_access` · `trading` · `governance`
+
+Once registered, any app resolves your agent in one call:
+
+```typescript
+const agent = await getAgentIdentity("myagent.sol", connection)
+// agent.capabilities  → ["payments", "trading"]
+// agent.trustScore    → 74
+// agent.operator      → "thewoodfish.sol"
+```
 
 An agent with a SIK identity is a trustworthy agent by default.
 
