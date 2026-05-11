@@ -1,18 +1,19 @@
 # SIK-1: Solana Identity Kit — Protocol Specification
 
-**Version:** 1.0.0-draft  
-**Status:** Active (Hackathon Build)  
+**Version:** 1.1.0  
+**Status:** Active  
 **Authors:** thewoodfish
 
 ---
 
 ## Abstract
 
-SIK-1 defines the `SIKIdentity` type, the resolution algorithm, and the
-reputation scoring formula that together constitute the first version of the
-Solana Identity Kit protocol. SIK is an open identity primitive built on top
-of SNS (Solana Name Service) that any Solana application can integrate with a
-single function call.
+SIK-1 defines the `SIKIdentity` and `AgentIdentity` types, the resolution
+algorithms for both, the reputation scoring formula for humans, and the trust
+scoring formula for agents. Together these constitute the first version of the
+Solana Identity Kit protocol — an open identity primitive built on SNS (Solana
+Name Service) that any Solana application can integrate with a single function
+call.
 
 ---
 
@@ -42,7 +43,7 @@ interface SIKIdentity {
     computedAt:  number;              // unix timestamp (ms)
   };
 
-  credentials: SIKCredential[];  // live via SAS — see @sik/credentials
+  credentials: SIKCredential[];  // live via SAS
 
   fetchedAt: number;          // unix timestamp (ms)
 }
@@ -50,7 +51,7 @@ interface SIKIdentity {
 
 ---
 
-## 2. Resolution Algorithm
+## 2. Human Identity Resolution Algorithm
 
 ```
 getIdentity(domain, connection)
@@ -68,7 +69,8 @@ getIdentity(domain, connection)
   │       getRecordV2(domain, Record.Backpack)
   │   → null if stale, null if missing
   ├── 4. computeReputation(owner, connection) → ReputationBreakdown
-  └── 5. Assemble SIKIdentity, cache, return
+  ├── 5. fetchCredentials(owner, connection) → SIKCredential[]
+  └── 6. Assemble SIKIdentity, cache, return
 ```
 
 **Invariants:**
@@ -78,7 +80,7 @@ getIdentity(domain, connection)
 
 ---
 
-## 3. Reputation Scoring Formula
+## 3. Human Reputation Scoring Formula
 
 All data sourced from public on-chain state. No oracles. Fully reproducible.
 
@@ -139,10 +141,133 @@ total = accountAge + transactionVolume + programDiversity
 
 ---
 
-## 4. Credential Interface (Live — SIK-2)
+## 4. The `AgentIdentity` Type
 
-Credentials are live via the Solana Attestation Service. `getIdentity()` now
-returns populated credentials for any wallet that holds SAS attestations.
+The canonical identity object returned by `getAgentIdentity()`.
+
+```typescript
+interface AgentIdentity {
+  domain:         string;          // "myagent.sol"
+  address:        string;          // agent wallet address (base58)
+  operator:       string | null;   // controlling human wallet (base58)
+  operatorDomain: string | null;   // controlling human .sol name, if resolved
+
+  profile: {
+    url:    string | null;   // SNS Record.Url → agent API endpoint
+    github: string | null;   // SNS Record.Github → agent code repository
+  };
+
+  capabilities: AgentCapability[];  // derived from SAS credentials
+
+  trustScore:     number;              // 0–100
+  trustBreakdown: AgentTrustBreakdown;
+
+  credentials: SIKCredential[];  // SAS attestations held by this agent
+
+  lastActive:    number | null;   // unix timestamp of most recent tx
+  registeredAt:  number | null;   // unix timestamp of first tx
+}
+
+interface AgentTrustBreakdown {
+  operatorReputation:    number;   // 0–30
+  transactionConsistency: number;  // 0–25
+  authorizationDepth:    number;   // 0–25
+  programSpecialization: number;   // 0–20
+}
+
+type AgentCapability =
+  | "payments"
+  | "web_search"
+  | "code_execution"
+  | "data_access"
+  | "trading"
+  | "governance"
+  | "cross_chain";
+```
+
+---
+
+## 5. Agent Identity Resolution Algorithm
+
+```
+getAgentIdentity(domain, connection)
+  │
+  ├── 1. Normalise domain → strip .sol suffix
+  ├── 2. resolve(connection, domain) → agent PublicKey   [SNS]
+  ├── 3. Parallel fetch:
+  │       getRecordV2(domain, Record.Url)     → agent endpoint
+  │       getRecordV2(domain, Record.Github)  → agent repo
+  ├── 4. getSignaturesForAddress(agentKey, { limit: 100 })
+  │       → derive lastActive, registeredAt
+  ├── 5. fetchCredentials(agentKey, connection) → SIKCredential[]
+  │       → derive capabilities from schema names
+  ├── 6. Resolve operator:
+  │       SNS Record.Backpack or first-tx fee payer → operator PublicKey
+  │       getIdentity(operator, connection) → operatorIdentity
+  └── 7. computeAgentTrust(agentKey, operatorIdentity, credentials, connection)
+         → AgentTrustBreakdown + trustScore
+```
+
+---
+
+## 6. Agent Trust Scoring Formula
+
+### 6.1 Signal Weights
+
+| Signal | Max Points | Source |
+|---|---|---|
+| Operator Reputation | 30 | Operator's SIK score × 0.30 |
+| Transaction Consistency | 25 | Coefficient of variation of inter-tx gaps |
+| Authorization Depth | 25 | Count of non-expired SAS credentials |
+| Program Specialization | 20 | Concentration of tx volume in top program |
+| **Total** | **100** | |
+
+### 6.2 Scoring Functions
+
+**Operator Reputation (0–30)**
+```
+operatorScore = getIdentity(operator, connection).reputation.score
+score         = round(operatorScore / 100 × 30)
+```
+If no operator is resolvable, score = 0.
+
+**Transaction Consistency (0–25)**
+```
+gaps  = inter-transaction time deltas (seconds), last 100 txs
+cv    = stddev(gaps) / mean(gaps)   // coefficient of variation
+score = max(0, round(25 × (1 − min(cv, 1))))
+```
+Low variance (predictable agent) → higher score.
+Fewer than 5 transactions → score = 0.
+
+**Authorization Depth (0–25)**
+```
+validCredentials = credentials where expired = false
+score            = min(25, validCredentials.length × 8)
+```
+
+**Program Specialization (0–20)**
+```
+programCounts = frequency map of programId in last 100 txs
+topShare      = max(programCounts.values()) / sum(programCounts.values())
+score         = round(topShare × 20)
+```
+An agent that exclusively uses one program scores 20.
+An agent spread uniformly across 10 programs scores 2.
+
+### 6.3 Total Score
+```
+trustScore = operatorReputation + transactionConsistency
+           + authorizationDepth + programSpecialization
+```
+
+---
+
+## 7. Credential Interface
+
+Credentials are live via the Solana Attestation Service.
+`getIdentity()` and `getAgentIdentity()` both return populated credentials
+for any wallet that holds SAS attestations.
 
 ```typescript
 interface SIKCredential {
@@ -156,60 +281,55 @@ interface SIKCredential {
 }
 ```
 
-### SIK-2 Architecture
-
+**Implementation:**
 - No custom on-chain program — bridges to the Solana Attestation Service
-- `@sik/credentials` queries SAS via `getProgramAccounts` (memcmp on nonce)
+- `@sik-sdk/credentials` queries SAS via `getProgramAccounts` (memcmp on nonce)
 - Decodes raw account bytes with `sas-lib` Borsh decoders
 - Fully backwards-compatible: wallets with no SAS attestations return `[]`
 
-### Issue Credentials
-
-```bash
-# Devnet test
-pnpm --filter @sik/credentials issue-demo
-
-# Mainnet — issue to a specific wallet
-RECIPIENT=<wallet> RPC_URL=https://api.mainnet-beta.solana.com \
-  pnpm --filter @sik/credentials issue-demo
-```
-
 ---
 
-## 5. Versioning
-
-| Version | Status | Description |
-|---|---|---|
-| SIK-1 | Active | Core SDK + Reputation scoring |
-| SIK-2 | Active | Credentials via Solana Attestation Service |
-| SIK-3 | Active | Sign In with .sol + Agent Identity |
-| SIK-4 | Planned | ZK selective disclosure |
-
-Backwards compatibility: `SIKIdentity.credentials` is always a valid array.
-Apps depending on `[]` today will receive populated data in SIK-2 with no
-interface change.
-
----
-
-## 6. Caching
+## 8. Caching
 
 The reference implementation caches identity objects in-memory with a
 configurable TTL (default: 1 hour). Callers can override:
 
 ```typescript
-const identity = await getIdentity("example.sol", connection, {
-  cache: true,
-  cacheTTL: 3_600_000,  // 1 hour in ms
-});
+// Default: 1 hour TTL
+const identity = await getIdentity("example.sol", connection)
+
+// Force a live read — bypass cache
+const identity = await getIdentity("example.sol", connection, { cache: false })
+
+// Custom TTL — re-fetch every 5 minutes
+const identity = await getIdentity("example.sol", connection, { cacheTTL: 300_000 })
 ```
 
-Cache invalidation is caller-controlled. Pass `cache: false` to bypass.
+Cache invalidation is caller-controlled. The same options apply to
+`getAgentIdentity()`.
 
 ---
 
-## 7. References
+## 9. Versioning
+
+| Version | Component | Status |
+|---|---|---|
+| SIK-1 | Core SDK + Reputation + Auth + Agent + Credentials | ✅ Live |
+| SIK-2 | Native on-chain issuer registry (Anchor program) | 🔲 Grant-funded |
+| SIK-3 | ZK selective disclosure | 🔲 Planned |
+| SIK-4 | Ecosystem integrations (5+ apps) | 🔲 Planned |
+
+Backwards compatibility: `SIKIdentity.credentials` is always a valid array.
+`AgentIdentity.capabilities` is always a valid array.
+Apps depending on empty arrays today receive populated data as credentials
+are issued — no interface change required.
+
+---
+
+## 10. References
 
 - [SNS Records V2](https://docs.sns.id/records)
 - [Bonfida SPL Name Service](https://github.com/Bonfida/spl-name-service)
+- [Solana Attestation Service](https://github.com/solana-attestation-service)
 - [SPL Governance](https://github.com/solana-labs/solana-program-library/tree/master/governance)
 - [Solana RPC API](https://docs.solana.com/api)
