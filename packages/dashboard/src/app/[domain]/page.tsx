@@ -6,6 +6,7 @@ import { getIdentity } from "@sik-sdk/core";
 import { IdentityCard } from "@/components/IdentityCard";
 import { RealtimeReputationUpdater } from "@/components/RealtimeReputationUpdater";
 import { CredentialList } from "@/components/CredentialList";
+import { DevCallout } from "@/components/DevCallout";
 
 interface PageProps {
   params: { domain: string };
@@ -61,6 +62,8 @@ export default async function DomainPage({ params }: PageProps) {
         />
 
         <CredentialList credentials={identity.credentials} />
+
+        <DevCallout domain={identity.domain} />
 
         <div className="text-center text-xs text-gray-600">
           Fetched at {new Date(identity.fetchedAt).toUTCString()} · Data from

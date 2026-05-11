@@ -1,101 +1,151 @@
 # SIK — Solana Identity Kit
 
-The identity standard for humans and agents on Solana. One SDK call resolves any `.sol` name to a full identity — profile, reputation, credentials, and authentication sessions.
+> ENS gives you a name. SIK gives you an identity.
 
-**Live:** https://sik-phi.vercel.app · **npm:** `@sik-sdk/core` · `@sik-sdk/reputation` · `@sik-sdk/auth` · `@sik-sdk/agent` · `@sik-sdk/credentials`
+**Live:** https://sik-phi.vercel.app
+**npm:** @sik-sdk/core · @sik-sdk/reputation · @sik-sdk/auth · @sik-sdk/agent · @sik-sdk/credentials
 
 ---
 
+## The Problem
+
+Every Solana app that needs identity builds the same thing from scratch:
+profile resolution, reputation logic, login flow, credential checks.
+
+Every AI agent that needs to act on-chain has no trust layer —
+no way for a protocol to know if it can be trusted before granting access.
+
+SIK solves both.
+
+---
+
+## What SIK Is
+
+An open identity protocol built on SNS. One SDK call returns everything
+any app — or any agent — needs to know about a `.sol` identity.
+
 ```typescript
-import { getIdentity }      from "@sik-sdk/core";
-import { signIn }           from "@sik-sdk/auth";
-import { getAgentIdentity } from "@sik-sdk/agent";
+import { getIdentity } from "@sik-sdk/core"
 
-// Resolve any .sol identity
-const identity = await getIdentity("bonfida.sol", connection);
-console.log(identity.reputation.score);  // 44
-console.log(identity.credentials);       // SAS-verified on-chain credentials
+const identity = await getIdentity("example.sol", connection)
 
-// Authenticate a user
-const session = await signIn({ publicKey, signMessage }, connection);
-console.log(session.domain);             // "thewoodfish.sol"
+identity.profile        // avatar, social links, bio
+identity.reputation     // 0–100 score, computed from on-chain activity
+identity.credentials    // SAS-verified attestations from trusted issuers
+```
 
-// Resolve an agent identity
-const agent = await getAgentIdentity("myagent.sol", connection);
-console.log(agent.trustScore);           // 0–100
-console.log(agent.capabilities);         // ["payments", "web_search"]
+For agents:
+
+```typescript
+import { getAgentIdentity } from "@sik-sdk/agent"
+
+const agent = await getAgentIdentity("myagent.sol", connection)
+
+agent.operator          // human wallet that controls this agent
+agent.capabilities      // ["payments", "trading", "web_search"]
+agent.trustScore        // computed from consistency, specialization, credentials
+agent.credentials       // what protocols have authorized this agent
 ```
 
 ---
 
-## Why it exists
+## Why This Is Different
 
-Every Solana app that needs identity — DAOs, marketplaces, AI agents — rebuilds the same profile + reputation + auth logic from scratch. SIK standardises it. Five packages, one SDK, portable across every app.
+| | ENS | SNS alone | SIK |
+|---|---|---|---|
+| Human-readable name | ✅ | ✅ | ✅ |
+| On-chain reputation | ❌ | ❌ | ✅ |
+| Verifiable credentials | ❌ | ❌ | ✅ |
+| Agent identity layer | ❌ | ❌ | ✅ |
+| One SDK call | ❌ | ❌ | ✅ |
+| Solana-native | ❌ | ✅ | ✅ |
+
+---
+
+## Programmable Identity
+
+Programmable means the identity responds to on-chain behaviour.
+
+- Reputation updates as you transact
+- Credentials gate access to apps and protocols
+- An agent's trust score reflects its actual behaviour — not its creator's word
+- Any protocol reads the same identity without coordination
+
+This is not a profile page. It is an on-chain primitive.
+
+---
+
+## For dApp Developers
+
+Without SIK, you build:
+- SNS resolution logic
+- Reputation scoring from scratch
+- Custom login flow
+- Credential verification
+
+With SIK, you call `getIdentity()` and ship your product.
+
+```typescript
+// DAO access gate — 5 lines
+const identity = await getIdentity(userDomain, connection)
+if (identity.reputation.score < 70) {
+  throw new Error("Reputation too low for access")
+}
+```
+
+```typescript
+// Agent authorization — 4 lines
+const agent = await getAgentIdentity(agentDomain, connection)
+if (!agent.capabilities.includes("payments")) {
+  throw new Error("Agent not authorized for payments")
+}
+```
+
+---
+
+## For AI Agent Builders
+
+Give your agent a `.sol` name.
+Register its capabilities on-chain.
+Any protocol that uses SIK can verify your agent before granting access —
+without you having to negotiate trust manually with each integration.
+
+An agent with a SIK identity is a trustworthy agent by default.
 
 ---
 
 ## Packages
 
-| Package | Description |
+| Package | What it does |
 |---|---|
-| [`@sik-sdk/core`](packages/core) | `getIdentity()` — resolve any `.sol` to a full `SIKIdentity` |
-| [`@sik-sdk/reputation`](packages/reputation) | On-chain reputation scoring engine (0–100) |
-| [`@sik-sdk/auth`](packages/auth) | `signIn()` — Sign In with .sol, standardised auth sessions |
-| [`@sik-sdk/agent`](packages/agent) | `getAgentIdentity()` — trust scores and capabilities for AI agents |
-| [`@sik-sdk/credentials`](packages/credentials) | SAS-backed verifiable on-chain attestations |
-| [`@sik-sdk/dashboard`](packages/dashboard) | Next.js reference app — live at sik-phi.vercel.app |
-
-## Quick Start
+| `@sik-sdk/core` | `getIdentity()` — profile + reputation + credentials |
+| `@sik-sdk/reputation` | On-chain reputation scoring engine |
+| `@sik-sdk/auth` | Sign In with .sol — authenticated identity sessions |
+| `@sik-sdk/agent` | Agent identity — capabilities, trust, operator |
+| `@sik-sdk/credentials` | SAS credential integration |
 
 ```bash
-pnpm install
-pnpm build
-pnpm dev        # http://localhost:3000
+npm install @sik-sdk/core @sik-sdk/reputation
 ```
 
 ---
 
-## Reputation Scoring
+## Protocol Spec
 
-0–100, computed entirely from public on-chain data. No oracles. Reproducible by anyone with an RPC.
-
-| Signal | Max | Source |
-|---|---|---|
-| Account age | 20 | Age of oldest transaction |
-| Transaction volume | 20 | Log-scaled tx count |
-| Program diversity | 20 | Unique programs interacted with |
-| DAO participation | 20 | Governance program interactions |
-| SOL balance | 10 | Current SOL holdings |
-| NFT holdings | 10 | Token accounts with supply=1 |
-| **Total** | **100** | |
+[SIK-1 →](./docs/SIK-1.md)
 
 ---
 
-## Agent Trust Scoring
-
-Agents are scored differently from humans — their trust comes from operator reputation, transaction consistency, authorization depth (SAS credentials), and program specialization.
-
-| Signal | Max | Source |
-|---|---|---|
-| Operator reputation | 30 | Inherited from operator's SIK score |
-| Transaction consistency | 25 | Regularity of on-chain activity |
-| Authorization depth | 25 | Number of SAS-issued credentials |
-| Program specialization | 20 | Focused vs scattered program usage |
-| **Total** | **100** | |
-
----
-
-## Protocol Roadmap
+## Roadmap
 
 | Version | Component | Status |
 |---|---|---|
-| SIK-1 | Core SDK + Reputation Layer | ✅ Live |
-| SIK-2 | Credentials via Solana Attestation Service | ✅ Live |
-| SIK-3 | Sign In with .sol + Agent Identity | ✅ Live |
-| SIK-4 | ZK Selective Disclosure | Planned |
-
-See [docs/SIK-1.md](docs/SIK-1.md) for the full protocol specification.
+| SIK-1 | Core SDK + Reputation + Auth + Agent + Credentials | ✅ Live |
+| SIK-2 | Native on-chain issuer registry (Anchor program) | 🔲 Grant-funded |
+| SIK-3 | ZK selective disclosure | 🔲 Planned |
+| SIK-4 | Ecosystem integrations (5+ apps) | 🔲 Planned |
 
 ---
 
-Built for the Colosseum Frontier Hackathon · SNS Identity + Agent Identity tracks · May 2026
+Built at Colosseum Frontier Hackathon 2026
+SNS Identity Track · Social Identity + Agent Identity

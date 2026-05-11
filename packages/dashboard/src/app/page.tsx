@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { LandingSearch } from "@/components/LandingSearch";
 
-// Loaded client-side only — needs wallet context
 const ConnectWalletSection = dynamic(
   () => import("@/components/ConnectWalletSection").then((m) => m.ConnectWalletSection),
   { ssr: false }
@@ -26,7 +25,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center">
+      <section className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="inline-flex items-center gap-2 bg-brand-card border border-brand-border rounded-full px-4 py-1.5 text-sm text-brand-green">
             <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
@@ -34,63 +33,86 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-5xl font-bold leading-tight">
-            One call to resolve any{" "}
-            <span className="text-brand-purple">.sol</span> identity
+            ENS gives you a name.<br />
+            <span className="text-brand-purple">SIK gives you an identity.</span>
           </h1>
 
           <p className="text-lg text-gray-400 max-w-xl mx-auto">
-            SIK is the identity primitive every Solana app has been rebuilding
-            independently — now standardised. Profile, reputation score, and
-            credentials from a single function call.
+            Profile. Reputation. Credentials. For humans and agents.
+            One SDK call. Open source. Solana-native.
           </p>
 
-          <div className="bg-brand-card border border-brand-border rounded-lg p-4 text-left font-mono text-sm">
-            <span className="text-gray-500">{"// any Solana app"}</span>
-            <br />
-            <span className="text-brand-green">import</span>
-            <span className="text-white"> {"{ getIdentity }"} </span>
-            <span className="text-brand-green">from</span>
-            <span className="text-brand-purple"> &quot;@sik/core&quot;</span>
-            <span className="text-white">;</span>
-            <br />
-            <br />
-            <span className="text-gray-400">const identity = </span>
-            <span className="text-brand-green">await</span>
-            <span className="text-gray-400"> getIdentity(</span>
-            <span className="text-brand-purple">&quot;bonfida.sol&quot;</span>
-            <span className="text-gray-400">, connection);</span>
-          </div>
-
-          <LandingSearch />
-
           <div className="flex flex-col items-center gap-3">
+            <LandingSearch />
             <SignInButton />
-            <p className="text-gray-600 text-xs">
-              Connect your wallet above, then sign in with your .sol name
-            </p>
           </div>
         </div>
       </section>
 
-      {/* Feature grid */}
+      {/* Two audience cards */}
       <section className="border-t border-brand-border px-6 py-16">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard
-            title="Profile"
-            description="Avatar, social links, and metadata from SNS Records V2. Fetched in parallel, gracefully degraded."
-            color="text-brand-purple"
-          />
-          <FeatureCard
-            title="Reputation"
-            description="0–100 score computed from public on-chain signals. No oracles. Reproducible by anyone with an RPC."
-            color="text-brand-green"
-          />
-          <FeatureCard
-            title="Credentials"
-            description="SAS-backed verifiable attestations. Any issuer can publish on-chain credentials that appear alongside profile and reputation."
-            color="text-yellow-400"
-            badge="Live"
-          />
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Human Identity */}
+          <div className="bg-brand-card border border-brand-border rounded-xl p-8 space-y-4">
+            <div className="text-3xl">👤</div>
+            <h2 className="text-xl font-bold text-white">Human Identity</h2>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Sign in with .sol — standardised auth session</li>
+              <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Portable reputation score (0–100, on-chain)</li>
+              <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Verifiable credentials via SAS</li>
+            </ul>
+            <Link
+              href="/bonfida.sol"
+              className="inline-block mt-2 text-sm text-brand-purple hover:underline"
+            >
+              Try bonfida.sol →
+            </Link>
+          </div>
+
+          {/* Agent Identity */}
+          <div className="bg-brand-card border border-brand-border rounded-xl p-8 space-y-4">
+            <div className="text-3xl">🤖</div>
+            <h2 className="text-xl font-bold text-white">Agent Identity</h2>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li className="flex items-center gap-2"><span className="text-cyan-400">✓</span> Give your agent a .sol name + capabilities</li>
+              <li className="flex items-center gap-2"><span className="text-cyan-400">✓</span> On-chain trust score — operator, consistency, credentials</li>
+              <li className="flex items-center gap-2"><span className="text-cyan-400">✓</span> Any protocol verifies the agent before granting access</li>
+            </ul>
+            <Link
+              href="/demo/dao-gate"
+              className="inline-block mt-2 text-sm text-cyan-400 hover:underline"
+            >
+              Try agent gate demo →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer code block */}
+      <section className="border-t border-brand-border px-6 py-16 bg-brand-card/30">
+        <div className="max-w-2xl mx-auto space-y-4 text-center">
+          <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Any app. One call.</p>
+          <div className="bg-brand-card border border-brand-border rounded-xl p-6 text-left font-mono text-sm">
+            <div className="space-y-1">
+              <div>
+                <span className="text-brand-green">import</span>
+                <span className="text-white"> {"{ getIdentity }"} </span>
+                <span className="text-brand-green">from</span>
+                <span className="text-brand-purple"> &quot;@sik-sdk/core&quot;</span>
+              </div>
+              <div className="pt-2">
+                <span className="text-gray-400">const identity = </span>
+                <span className="text-brand-green">await</span>
+                <span className="text-gray-400"> getIdentity(</span>
+                <span className="text-brand-purple">&quot;example.sol&quot;</span>
+                <span className="text-gray-400">, connection)</span>
+              </div>
+              <div className="text-gray-600 text-xs pt-1">
+                {"// identity.profile · identity.reputation · identity.credentials"}
+              </div>
+            </div>
+          </div>
+          <p className="text-gray-600 text-xs font-mono">npm install @sik-sdk/core</p>
         </div>
       </section>
 
@@ -111,31 +133,5 @@ export default function HomePage() {
         </div>
       </footer>
     </main>
-  );
-}
-
-function FeatureCard({
-  title,
-  description,
-  color,
-  badge,
-}: {
-  title: string;
-  description: string;
-  color: string;
-  badge?: string;
-}) {
-  return (
-    <div className="bg-brand-card border border-brand-border rounded-lg p-6 space-y-3">
-      <div className="flex items-center gap-2">
-        <h3 className={`font-bold text-lg ${color}`}>{title}</h3>
-        {badge && (
-          <span className="text-xs bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 rounded px-2 py-0.5">
-            {badge}
-          </span>
-        )}
-      </div>
-      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
-    </div>
   );
 }
