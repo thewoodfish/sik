@@ -672,12 +672,82 @@ integration downstream, so they warrant explicit versioning.
 
 ## Roadmap
 
-| Version | Component | Status |
-|---|---|---|
-| SIK-1 | Core SDK + Reputation + Auth + Agent + Credentials | ✅ Live |
-| SIK-2 | Native on-chain issuer registry (Anchor program) | 🔲 Grant-funded |
-| SIK-3 | ZK selective disclosure | 🔲 Planned |
-| SIK-4 | Ecosystem integrations (5+ apps) | 🔲 Planned |
+Each version of SIK unlocks something the previous one could not.
+The order is not arbitrary — it is a dependency chain.
+
+---
+
+### SIK-1 — The Primitive ✅ Live
+
+Core SDK + Reputation + Auth + Agent + Credentials.
+
+Everything needed to resolve a `.sol` identity, compute a reputation score,
+authenticate a user, and verify an agent — in production, on mainnet, today.
+This is the foundation every subsequent version builds on.
+
+---
+
+### SIK-2 — Trusted Issuer Registry 🔲 Grant-funded
+
+Right now, any wallet can issue a SAS credential.
+SIK-2 adds a native Anchor program that maintains a permissioned registry
+of trusted issuers — organizations whose attestations protocols can rely on
+without having to vet the issuer themselves.
+
+What this unlocks: **credential composability at scale.**
+
+A KYC provider registers once in the SIK-2 registry. Every protocol that
+integrates SIK can now accept their credentials without a bilateral agreement.
+An institutional trading firm gets verified once — and that verification
+travels to every DeFi protocol that trusts the same registry.
+
+Without SIK-2, trust between issuers and protocols is bilateral and manual.
+With SIK-2, it is open and composable — the same leap that TLS made for
+the web, applied to on-chain identity.
+
+---
+
+### SIK-3 — ZK Selective Disclosure 🔲 Planned
+
+`getIdentity()` today returns everything: exact scores, full credential list,
+every signal. For most use cases that is fine. For high-stakes or
+privacy-sensitive use cases, it is a problem.
+
+SIK-3 lets users prove claims without revealing the underlying data:
+
+```typescript
+// Prove score >= 70 without revealing the exact score
+const proof = await proveThreshold(identity, 70)
+// verify(proof) → true/false, with zero knowledge of the actual score
+
+// Prove KYC credential exists without revealing the issuer
+const credProof = await proveCredential(identity, "kyc-verified")
+```
+
+What this unlocks: **privacy-preserving access control.**
+
+A DAO can require governance participation without learning each voter's
+full on-chain history. A lending protocol can require a KYC credential
+without knowing which issuer issued it. Users keep sovereignty over
+what they disclose.
+
+---
+
+### SIK-4 — Ecosystem Integrations 🔲 Planned
+
+A reputation primitive that only one app reads is not infrastructure —
+it is a feature. SIK-4 is the push to get 5+ real protocols integrating:
+DAOs using reputation for weighted voting, DeFi protocols gating access
+by trust score, NFT marketplaces rewarding community members,
+airdrops filtering sybils with one call instead of a custom pipeline.
+
+What this unlocks: **network effects.**
+
+Every new integration makes reputation more valuable for every user.
+A score that travels across Realms, Tensor, a lending protocol, and
+a new DEX is worth exponentially more than a score that lives in one app.
+This is where SIK stops being a developer tool and becomes
+a public good for the Solana ecosystem.
 
 ---
 
