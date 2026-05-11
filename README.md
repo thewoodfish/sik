@@ -111,7 +111,7 @@ without you having to negotiate trust manually with each integration.
 
 **How to register an agent identity:**
 
-1. **Get a `.sol` name** for your agent wallet at [naming.bonfida.org](https://naming.bonfida.org)
+1. **Get a `.sol` name** for your agent wallet at [sns.id](https://sns.id)
 2. **Set SNS records** — endpoint and repo identify your agent on-chain:
    ```typescript
    // Set via Bonfida SNS app, or programmatically:
